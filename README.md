@@ -11,7 +11,7 @@
 ### Installation Steps
 1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/tshukla2001/VaaniNews.git
    cd VaaniNews
    ```
 2. **Create and activate a virtual environment**:

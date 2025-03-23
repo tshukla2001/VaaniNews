@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from utils import fetch_news_articles, comparative_analysis, final_summary_of_all, generating_text_to_speech
 from google.cloud import translate_v2 as translate
 
@@ -72,7 +72,7 @@ def text_to_speech(text: str):
     """
 
     try:
-        generating_text_to_speech(text)
-        return JSONResponse(content={"message": "TTS generated successfully"}, status_code=200)
+        audio_path = generating_text_to_speech(text)
+        return FileResponse(audio_path, media_type="audio/mpeg", filename="output.mp3")
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)

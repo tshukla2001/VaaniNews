@@ -3,6 +3,8 @@ import re
 import nltk
 import requests
 import json
+import io
+from fastapi.responses import StreamingResponse
 from google.cloud import texttospeech
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
@@ -13,9 +15,18 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 import google.generativeai as genai
 
+# Retrieve API keys from environment variables
+news_api = os.environ.get("NEWS_API_KEY")
+groq_api = os.environ.get("GROQ_API_KEY")
+gen_ai_key = os.environ.get("GENAI_KEY")
+google_credential = os.environ.get("GOOGLE_CREDENTIAL")
+
+# Set Google application credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_credential
+
 
 # Configure the generative AI model with an API key
-genai.configure(api_key="API_KEY")
+genai.configure(api_key=gen_ai_key)
 model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Download necessary NLTK data files
@@ -23,20 +34,8 @@ nltk.download("punkt")
 nltk.download("stopwords")
 nltk.download("wordnet")
 
-# Load environment variables
-load_dotenv()
-
-# Set Google application credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./path-to-your-google-credentials.json"
-
-# Retrieve API keys from environment variables
-news_api = os.getenv("NEWS_API_KEY")
-groq_api = os.getenv("GROQ_API_KEY")
-
 # Define News API URL
 NEWS_API_URL = "https://eventregistry.org/api/v1/article/getArticles"
-
-token="token"
 
 # Configure Groq Chat Model for NLP tasks
 news_model = ChatGroq(
@@ -243,9 +242,10 @@ def generating_text_to_speech(text, lang="hi-IN", output_file="output.mp3"):
         input=synthesis_input, voice=voice, audio_config=audio_config
     )
 
-    with open(output_file, "wb") as out:
-        out.write(response.audio_content)
-    print(f"Audio content written to {output_file}")
+    audio_stream = io.BytesIO(response.audio_content)
+    audio_stream.seek(0)
+
+    return StreamingResponse(audio_stream, media_type="audio/mpeg")
 
 
 if __name__ == "__main__":
@@ -259,7 +259,6 @@ if __name__ == "__main__":
     print(comp_analysis)
     print(final_summary)
 
-    
 
 
 

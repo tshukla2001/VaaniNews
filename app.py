@@ -1,5 +1,6 @@
 import os
 import requests
+import tempfile
 import streamlit as st
 
 # Base URL for the backend API
@@ -51,21 +52,18 @@ if fetch_news or fetch_summary:
         if final_summary:
             st.write("Generating Hindi Speech for the final summary...")
 
-            tts_response = requests.get(f"{API_BASE_URL}/generate_tts/?text={translate_response.json()}")
+            tts_response = requests.get(f"{API_BASE_URL}/generate_tts/?text={translate_response.json()}", stream=True)
 
             if tts_response.status_code == 200:
-                audio_file = "output.mp3"  # Expected output audio file
 
-                # Check if the audio file exists before playing
-                if os.path.exists(audio_file):
-                    st.audio(audio_file, format="audio/mp3") 
-                else:
-                    st.error("Audio file was not generated.")
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio:
+                    temp_audio.write(tts_response.content)
+                    temp_audio_path = temp_audio.name
+
+                st.audio(temp_audio_path, format="audio/mp3") 
             else:
                 st.error("Failed to generate text-to-speech.")
         else:
             st.warning("No summary found to generate speech.")
     else:
         st.error(f"Failed to fetch news about {company_name}")
-
-

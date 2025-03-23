@@ -14,6 +14,9 @@ final_output = {
     "Final Sentiment Analysis": ""
 }
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello, World!"}
 
 @app.get("/fetch_news")
 def fetch_news(company: str):

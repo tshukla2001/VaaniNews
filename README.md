@@ -51,19 +51,19 @@ The backend is built using **FastAPI** and provides endpoints for news fetching,
 ### **API Endpoints & Usage**
 #### **1. Fetch News & Sentiment Analysis**
 ```http
-GET /fetch_news?company=Tesla
+GET /fetch_news?company=Microsoft
 ```
 - Fetches 10 news articles, summarizes them, and performs sentiment analysis.
 
 #### **2. Translate Text to Hindi**
 ```http
-GET /translate?text=Hello&target_language=hi
+GET /translate?text=News&target_language=hi
 ```
 - Translates any given text to Hindi using **Google Cloud Translation API**.
 
 #### **3. Generate TTS**
 ```http
-GET /generate_tts?text=Hello World
+GET /generate_tts?text=Company News
 ```
 - Converts the given text into Hindi speech and returns an audio file.
 
